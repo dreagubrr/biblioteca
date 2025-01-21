@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Mensajes</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        /* Estilos adicionales */
+        .messages-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .message {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .message:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mensajes Recibidos</h1>
+        <div id="messages" class="messages-container">
+            <!-- Los mensajes se mostrarán aquí -->
+        </div>
+        <button onclick="loadMessages()" class="button">Cargar Mensajes</button>
+    </div>
+
+    <script>
+        // Función para cargar los mensajes y mostrarlos en pantalla
+        function loadMessages() {
+            fetch('/listar-mensajes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messagesContainer = document.getElementById('messages');
+                messagesContainer.innerHTML = ''; // Limpiar contenido previo
+
+                data.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message');
+                    messageElement.innerHTML = `
+                        <p><strong>Nombre:</strong> ${message.nombre}</p>
+                        <p><strong>Correo:</strong> ${message.correo}</p>
+                        <p><strong>Mensaje:</strong> ${message.mensaje}</p>
+                        <p><em>Fecha:</em> ${new Date(message.creado).toLocaleString()}</p>
+                    `;
+                    messagesContainer.appendChild(messageElement);
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar los mensajes:', error);
+            });
+        }
+
+        // Cargar los mensajes automáticamente al cargar la página
+        window.onload = loadMessages;
+    </script>
+</body>
+</html>
